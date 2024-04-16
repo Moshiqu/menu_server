@@ -1,0 +1,61 @@
+{
+    "keepSettings": {
+        "type": 2,
+        "amount": 10
+    },
+    "auditFilename": "audit.json",
+    "hashType": "md5",
+    "extension": "",
+    "files": [
+        {
+            "date": 1712740005273,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240410-error.log",
+            "hash": "33faf4957aec000271c5aaf8ef9a14d5"
+        },
+        {
+            "date": 1712740005275,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240410-access.log",
+            "hash": "280fd68fc09770c533f2505195215b91"
+        },
+        {
+            "date": 1712802473884,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240411-error.log",
+            "hash": "c845d4556f955d5b2c514dc542edb776"
+        },
+        {
+            "date": 1712802473898,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240411-access.log",
+            "hash": "b5d9892af7ff0eecc48054a715bc995d"
+        },
+        {
+            "date": 1713145926137,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240415-error.log",
+            "hash": "ce92dcff5c225d0b42d4a73ee56a1b9f"
+        },
+        {
+            "date": 1713145926154,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240415-access.log",
+            "hash": "a39b293d080dff79e2c50c91fc463314"
+        },
+        {
+            "date": 1713233476566,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240416-error.log",
+            "hash": "b1a204016d6b9b5e5c7c410ab92c1d3b"
+        },
+        {
+            "date": 1713233476568,
+            "name": "E:\\wrokspace\\menu-server\\run_log\\20240416-access.log",
+            "hash": "07ebc2d5d17425069e494cf19508c11e"
+        },
+        {
+            "date": 1713249552409,
+            "name": "E:\\wrokspace\\menu_server\\run_log\\20240416-error.log",
+            "hash": "1dcb5b20c824df5c1d7c956676cdb24d"
+        },
+        {
+            "date": 1713249552411,
+            "name": "E:\\wrokspace\\menu_server\\run_log\\20240416-access.log",
+            "hash": "071a63b18dfa83040335df943667ffe1"
+        }
+    ]
+}

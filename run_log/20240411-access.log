@@ -1,0 +1,11 @@
+2024/4/11 上午10:27:58 ::ffff:192.168.1.186 POST /api/menu/updateDetail 200 47 - 1.421 ms
+2024/4/11 上午11:08:42 ::ffff:192.168.1.186 POST /api/menu/updateDetail 200 144 - 97.570 ms
+2024/4/11 上午11:17:17 ::ffff:192.168.1.186 POST /api/menu/updateDetail 200 213 - 517.363 ms
+2024/4/11 上午11:38:36 ::ffff:192.168.1.186 DELETE /api/menu/deleteProduct 200 48 - 7.392 ms
+2024/4/11 上午11:40:34 ::ffff:192.168.1.186 DELETE /api/menu/deleteProduct 200 213 - 50.723 ms
+2024/4/11 上午11:42:43 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 660 - 47.276 ms
+2024/4/11 上午11:43:13 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 536 - 5.949 ms
+2024/4/11 上午11:43:51 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 536 - 8.106 ms
+2024/4/11 上午11:44:14 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 536 - 4.702 ms
+2024/4/11 上午11:45:00 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 660 - 4.930 ms
+2024/4/11 上午11:45:29 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 744 - 44.159 ms
