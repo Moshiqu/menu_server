@@ -1,5 +1,6 @@
 .DS_Store
 node_modules/
+run_log/
 /dist/
 /src/assets/js/uploadUrl.js
 npm-debug.log*

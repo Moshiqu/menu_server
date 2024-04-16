@@ -89,3 +89,4 @@
 2024/4/16 上午11:48:12 ::ffff:192.168.1.186 POST /api/menu/updateCategorySort 200 {} {} {"value1":"{“id”:1,\"sortIndex\":2}","value2":"{“id”:2,\"sortIndex\":1}"} - 9.225 ms
 2024/4/16 上午11:49:25 ::ffff:192.168.1.186 POST /api/menu/updateCategorySort 200 {} {} {"value1":"{\"id\":1,\"sortIndex\":2}","value2":"{\"id\":2,\"sortIndex\":1}"} - 52.629 ms
 2024/4/16 上午11:49:40 ::ffff:192.168.1.186 POST /api/menu/updateCategorySort 200 {} {} {"value1":"{\"id\":1,\"sortIndex\":1}","value2":"{\"id\":2,\"sortIndex\":2}"} - 13.322 ms
+2024/4/16 下午2:39:24 ::ffff:192.168.1.186 GET /api/menu/getmenu 200 {} {} {} - 52.197 ms
