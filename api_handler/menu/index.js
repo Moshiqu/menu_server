@@ -52,32 +52,49 @@ exports.updateProductionDetailHandler = (req, res) => {
         productPrice: product_price
     } = req.body
 
-    if (!id && !category_id) return res.output(400, '缺少必要参数')
+    if (!id && !category_id && !product_name) return res.output(400, '缺少必要参数')
 
     db.query(
         'UPDATE production SET ? WHERE id = ?',
-        [{ product_name, product_description, category_id, product_price }, id],
+        [{ product_name, product_description: product_description || null, category_id, product_price: product_price || null }, id],
         (err, result) => {
             if (err) return res.output(500, err.code)
-
-            res.output(200, '修改成功')
+            res.output(200, '修改成功', { id })
         }
     )
 }
 
 exports.addProductionDetailHandler = (req, res) => {
-    const { productName: product_name, productDescription: product_description, cateId: category_id, productPrice: product_price } = req.body
+    const {
+        productName: product_name,
+        productDescription: product_description,
+        cateId: category_id,
+        productPrice: product_price
+    } = req.body
 
-    if (!category_id) return res.output(400, '缺少必要参数')
+    if (!category_id || !product_name) return res.output(400, '缺少必要参数')
 
-    db.query('INSERT INTO production SET ?', { product_name, product_description, category_id, product_price }, (err, result) => {
+    // 查找当前分类中最大的sort_index
+    db.query(`SELECT MAX(sort_index) sort_index FROM production WHERE category_id = ?`, [category_id], (err, result) => {
         if (err) return res.output(500, err.code)
-        res.output(200, '添加成功', { id: result.insertId })
+
+        let sort_index = 1
+        if (result.length) {
+            sort_index = result[result.length - 1].sort_index + 1
+        }
+        // 插入新的商品
+        db.query('INSERT INTO production SET ?', { product_name, product_description: product_description || null, category_id, product_price: product_price || null, sort_index }, (err, result) => {
+            if (err) return res.output(500, err.code)
+            res.output(200, '添加成功', { id: result.insertId })
+        })
     })
+
+
 }
 
 exports.deleteProductHandler = (req, res) => {
-    const { id } = req.query
+    const { id } = req.body
+    if (!id) return res.output(400, '缺少必要参数')
 
     db.query('UPDATE production SET ? WHERE id = ?', [{ is_active: 0 }, id], (err, result) => {
         if (err) return res.output(500, err.code)
