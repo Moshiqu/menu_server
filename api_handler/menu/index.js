@@ -32,8 +32,9 @@ exports.updateProductionSortHandler = (req, res) => {
     const { value1, value2 } = req.body
     if (!value1 && !value2) return res.output(400, '缺少必要参数')
 
-    const { id: id1, sortIndex: sort_index1 } = JSON.parse(value1)
-    const { id: id2, sortIndex: sort_index2 } = JSON.parse(value2)
+    const { id: id1, sortIndex: sort_index1 } = value1
+    const { id: id2, sortIndex: sort_index2 } = value2
+    if (!id1 || !id2 || !sort_index1 || !sort_index2) return res.output(400, '缺少必要参数')
 
     const sql = `UPDATE production SET sort_index = CASE id WHEN ? THEN  ? WHEN ? THEN ? END WHERE id IN (?,?)`
 
@@ -52,7 +53,7 @@ exports.updateProductionDetailHandler = (req, res) => {
         productPrice: product_price
     } = req.body
 
-    if (!id && !category_id && !product_name) return res.output(400, '缺少必要参数')
+    if (!id || !category_id || !product_name) return res.output(400, '缺少必要参数')
 
     db.query(
         'UPDATE production SET ? WHERE id = ?',
@@ -108,7 +109,7 @@ exports.addMaterialStepHandler = (req, res) => {
     const { material, step, id: production_id } = req.body
     if (!production_id) return res.output(400, '缺少必要参数')
 
-    const materialObj = material ? JSON.parse(material) : []
+    const materialObj = material || []
     const addMaterial = (materialObj, production_id) => {
         return new Promise((resolve, reject) => {
             if (!materialObj.length) return resolve(true)
@@ -116,8 +117,8 @@ exports.addMaterialStepHandler = (req, res) => {
             // 构建值列表
             const materialValues = materialObj
                 .map(item => {
-                    const { materialName, materialQuantity } = item
-                    return `('${materialName}', '${materialQuantity}', ${production_id})`
+                    const { material_name, material_quantity } = item
+                    return `('${material_name}', '${material_quantity}', ${production_id})`
                 })
                 .join(',')
 
@@ -132,7 +133,7 @@ exports.addMaterialStepHandler = (req, res) => {
         })
     }
 
-    const stepObj = step ? JSON.parse(step) : []
+    const stepObj = step || []
     const addStep = (stepObj, production_id) => {
         return new Promise((resolve, reject) => {
             if (!stepObj.length) return reject('步骤不能为空')
@@ -169,26 +170,26 @@ exports.addMaterialStepHandler2 = (req, res) => {
     if (!production_id) return res.output(400, '缺少必要参数')
 
     // 构建材料sql
-    const materialObj = material ? JSON.parse(material) : []
+    const materialObj = material || []
     const materialValues = materialObj
         .map(item => {
-            const { materialName, materialQuantity } = item
-            return `('${materialName}', '${materialQuantity}', ${production_id})`
+            const { material_name, material_quantity } = item
+            return `('${material_name}', '${material_quantity}', ${production_id})`
         })
         .join(',')
 
     // 构建步骤sql
-    const stepObj = step ? JSON.parse(step) : []
+    const stepObj = step || []
     if (!stepObj.length) return res.output(500, '步骤不能为空')
     const stepValues = stepObj
         .map((item, index) => {
-            const { stepDescription, stepImg } = item
-            return `('${stepDescription}', '${stepImg}', '${index + 1}', ${production_id})`
+            const { step_description, step_img } = item
+            return `('${step_description}', '${step_img}', '${index + 1}', ${production_id})`
         })
         .join(',')
 
     // 构建完整的 SQL 语句
-    const materialSql = `INSERT INTO material (material_name, material_quantity, production_id) VALUES ${materialValues}`
+    const materialSql = materialValues ? `INSERT INTO material (material_name, material_quantity, production_id) VALUES ${materialValues}` : `SELECT id FROM material WHERE id = ${production_id}`
     const stepSql = `INSERT INTO step (step_description, step_img, step_index, production_id) VALUES ${stepValues}`
 
     const queries = [{ sql: materialSql }, { sql: stepSql }]
@@ -197,7 +198,7 @@ exports.addMaterialStepHandler2 = (req, res) => {
             res.output(200, '添加成功')
         })
         .catch(err => {
-            res.output(500, '添加失败', err)
+            res.output(500, err)
         })
 }
 
@@ -206,21 +207,21 @@ exports.updateMaterialStepHandler = (req, res) => {
     if (!production_id) return res.output(400, '缺少必要参数')
 
     // 构建材料sql
-    const materialObj = material ? JSON.parse(material) : []
+    const materialObj = material || []
     const materialValues = materialObj
         .map(item => {
-            const { materialName, materialQuantity } = item
-            return `('${materialName}', '${materialQuantity}', ${production_id})`
+            const { material_name, material_quantity } = item
+            return `('${material_name}', '${material_quantity}', ${production_id})`
         })
         .join(',')
 
     // 构建步骤sql
-    const stepObj = step ? JSON.parse(step) : []
+    const stepObj = step || []
     if (!stepObj.length) return res.output(500, '步骤不能为空')
     const stepValues = stepObj
         .map((item, index) => {
-            const { stepDescription, stepImg } = item
-            return `('${stepDescription}', '${stepImg}', '${index + 1}', ${production_id})`
+            const { step_description, step_img } = item
+            return `('${step_description}', '${step_img}', '${index + 1}', ${production_id})`
         })
         .join(',')
 
@@ -266,7 +267,7 @@ exports.getMaterialStepHandler = (req, res) => {
     const queryStep = production_id => {
         return new Promise((resolve, reject) => {
             db.query(
-                'SELECT step_description, step_img, step_index FROM step WHERE production_id = ? AND is_active = ? ORDER BY step_index ASC',
+                'SELECT step_description, step_img FROM step WHERE production_id = ? AND is_active = ? ORDER BY step_index ASC',
                 [production_id, 1],
                 (err, rows, fields) => {
                     if (err) return reject(err)
