@@ -2,13 +2,19 @@ const db = require('../../sql/db')
 
 exports.getMenuHandler = (req, res) => {
     // 获取所有分类
-    db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 ORDER BY sort_index ASC', {}, (err, categories) => {
+    db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 ORDER BY sort_index ASC', (err, categories) => {
         if (err) return res.output(500, err.code)
         // 获取分类下的产品
-        const category_id = categories.map(item => item.id)
+        let category_id = categories.map(item => item.id)
+
+        if (!category_id.length) {
+            return res.output(200, '获取成功', [])
+        } else if (category_id.length === 1) {
+            category_id = category_id[0]
+        }
 
         db.query(
-            'SELECT category_id, id, img_src, product_description, product_name, sold_num, sort_index, product_price FROM production WHERE category_id in (?,?) AND is_active = 1 ORDER BY sort_index ASC',
+            `SELECT category_id, id, img_src, product_description, product_name, sold_num, sort_index, product_price FROM production WHERE category_id in ${typeof category_id === 'object' ? '(?,?)' : '(?)'} AND is_active = 1 ORDER BY sort_index ASC`,
             category_id,
             (err, productions) => {
                 if (err) return res.output(500, err.code)
@@ -333,7 +339,7 @@ exports.updateCategoryHandler = (req, res) => {
 }
 
 exports.deleteCategoryHandler = (req, res) => {
-    const { id: category_id } = req.query
+    const { id: category_id } = req.body
     if (!category_id) return res.output(400, '缺少必要参数')
 
     db.query(`UPDATE category SET ? WHERE id = ?`, [{ is_active: 0 }, category_id], (err, result) => {
@@ -347,8 +353,8 @@ exports.updateCategorySortHandler = (req, res) => {
     const { value1, value2 } = req.body
     if (!value1 && !value2) return res.output(400, '缺少必要参数')
 
-    const { id: id1, sortIndex: sort_index1 } = JSON.parse(value1)
-    const { id: id2, sortIndex: sort_index2 } = JSON.parse(value2)
+    const { id: id1, sortIndex: sort_index1 } = value1
+    const { id: id2, sortIndex: sort_index2 } = value2
 
     const sql = `UPDATE category SET sort_index = CASE id WHEN ? THEN  ? WHEN ? THEN ? END WHERE id IN (?,?)`
 
