@@ -16,7 +16,7 @@ exports.getMenuHandler = (req, res) => {
         const placeholders = Array(category_id.length).fill('?').join(','); // 生成占位符字符串，例如 '?,?,?,?,?' 
 
         db.query(
-            `SELECT category_id, id, img_src, product_description, product_name, sold_num, sort_index, product_price FROM production WHERE category_id in (${placeholders}) AND is_active = 1 ORDER BY sort_index ASC`,
+            `SELECT category_id, id, img_src, product_description, product_name, sold_num, sort_index, product_price, like_num, like_not_num FROM production WHERE category_id in (${placeholders}) AND is_active = 1 ORDER BY sort_index ASC`,
             category_id,
             (err, productions) => {
                 if (err) return res.output(500, err.code)
