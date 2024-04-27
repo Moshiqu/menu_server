@@ -3,19 +3,20 @@ const app = require('express')
 const router = app.Router()
 
 const {
-  getMenuHandler,
-  updateProductionSortHandler,
-  updateProductionDetailHandler,
-  deleteProductHandler,
-  addProductionDetailHandler,
-  addMaterialStepHandler2,
-  updateMaterialStepHandler,
-  getMaterialStepHandler,
-  addCategoryHandler,
-  getCategoryHandler,
-  updateCategoryHandler,
-  deleteCategoryHandler,
-  updateCategorySortHandler
+    getMenuHandler,
+    updateProductionSortHandler,
+    updateProductionDetailHandler,
+    deleteProductHandler,
+    addProductionDetailHandler,
+    addMaterialStepHandler2,
+    updateMaterialStepHandler,
+    getMaterialStepHandler,
+    addCategoryHandler,
+    getCategoryHandler,
+    updateCategoryHandler,
+    deleteCategoryHandler,
+    updateCategorySortHandler,
+    getProductHandler
 } = require('../../api_handler/menu/index')
 
 // 获取首页菜单
@@ -57,7 +58,8 @@ router.delete('/deleteCategory', deleteCategoryHandler)
 // 分类排序修改
 router.post('/updateCategorySort', updateCategorySortHandler)
 
-
+// 产品详情
+router.get('/getProduct', getProductHandler)
 
 
 

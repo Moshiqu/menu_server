@@ -365,3 +365,42 @@ exports.updateCategorySortHandler = (req, res) => {
         res.output(200, '修改成功', result)
     })
 }
+
+exports.getProductHandler = (req, res) => {
+    const { productionId: id } = req.query
+    if (!id) return res.output(400, '缺少必要参数')
+
+    const getProduct = new Promise((resolve, reject) => {
+        db.query('SELECT id,product_name,product_description,sold_num,img_src,product_price FROM production WHERE is_active = 1 AND id = ?', id, (err, production) => {
+            if (err) return reject(err)
+            return resolve(production)
+        })
+    })
+
+    const getMaterial = new Promise((resolve, reject) => {
+        db.query('SELECT material_name,material_quantity FROM material WHERE is_active = 1 AND production_id = ?', id, (err, material) => {
+            if (err) return reject(err)
+            return resolve(material)
+        })
+    })
+
+    const getStep = new Promise((resolve, reject) => {
+        db.query('SELECT step_description,step_img FROM step WHERE is_active = 1 AND production_id = ? ORDER BY step_index ASC', id, (err, step) => {
+            if (err) return reject(err)
+            return resolve(step)
+        })
+    })
+
+    Promise.all([getProduct, getMaterial, getStep]).then(results => {
+        const productionResult = results[0][0]
+        const materialResult = results[1]
+        const stepResult = results[2]
+
+        productionResult.materialList = materialResult
+        productionResult.stepList = stepResult
+
+        return res.output(200, '获取商品详情成功', productionResult)
+    }).catch(err => {
+        return res.output(500, err)
+    })
+}
