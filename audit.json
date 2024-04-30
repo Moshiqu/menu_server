@@ -1,61 +1,79 @@
 {
-    "keepSettings": {
-        "type": 2,
-        "amount": 10
+  "keepSettings": {
+    "type": 2,
+    "amount": 10
+  },
+  "auditFilename": "audit.json",
+  "hashType": "md5",
+  "extension": "",
+  "files": [{
+      "date": 1713145926137,
+      "name": "E:\\wrokspace\\menu-server\\run_log\\20240415-error.log",
+      "hash": "ce92dcff5c225d0b42d4a73ee56a1b9f"
     },
-    "auditFilename": "audit.json",
-    "hashType": "md5",
-    "extension": "",
-    "files": [
-        {
-            "date": 1713145926137,
-            "name": "E:\\wrokspace\\menu-server\\run_log\\20240415-error.log",
-            "hash": "ce92dcff5c225d0b42d4a73ee56a1b9f"
-        },
-        {
-            "date": 1713145926154,
-            "name": "E:\\wrokspace\\menu-server\\run_log\\20240415-access.log",
-            "hash": "a39b293d080dff79e2c50c91fc463314"
-        },
-        {
-            "date": 1713233476566,
-            "name": "E:\\wrokspace\\menu-server\\run_log\\20240416-error.log",
-            "hash": "b1a204016d6b9b5e5c7c410ab92c1d3b"
-        },
-        {
-            "date": 1713233476568,
-            "name": "E:\\wrokspace\\menu-server\\run_log\\20240416-access.log",
-            "hash": "07ebc2d5d17425069e494cf19508c11e"
-        },
-        {
-            "date": 1713249552409,
-            "name": "E:\\wrokspace\\menu_server\\run_log\\20240416-error.log",
-            "hash": "1dcb5b20c824df5c1d7c956676cdb24d"
-        },
-        {
-            "date": 1713249552411,
-            "name": "E:\\wrokspace\\menu_server\\run_log\\20240416-access.log",
-            "hash": "071a63b18dfa83040335df943667ffe1"
-        },
-        {
-            "date": 1713276002515,
-            "name": "D:\\workspace\\menu_server\\run_log\\20240416-error.log",
-            "hash": "1c84848124c7e71f4f7abb7ec9a0c3f1"
-        },
-        {
-            "date": 1713276002516,
-            "name": "D:\\workspace\\menu_server\\run_log\\20240416-access.log",
-            "hash": "5474460a99ad1b2c9bfd627f41ef8db7"
-        },
-        {
-            "date": 1713319816829,
-            "name": "E:\\wrokspace\\menu_server\\run_log\\20240417-error.log",
-            "hash": "8cab24b1105cb89aa3813f21e78a448b"
-        },
-        {
-            "date": 1713319816832,
-            "name": "E:\\wrokspace\\menu_server\\run_log\\20240417-access.log",
-            "hash": "3b1f86d8198e34c431d0b634f68e8520"
-        }
-    ]
+    {
+      "date": 1713881174093,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240423-error.log",
+      "hash": "c12a248c02abcd1c9c6699e3b824725d"
+    },
+    {
+      "date": 1713881174094,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240423-access.log",
+      "hash": "db12a6cf95f89011b9420316f18b4e21"
+    },
+    {
+      "date": 1713969177866,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240424-error.log",
+      "hash": "7eba21d710816b1d69019b2ab1093a82"
+    },
+    {
+      "date": 1713969177868,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240424-access.log",
+      "hash": "0b11b6632abf7a8b9fab1d5600516f32"
+    },
+    {
+      "date": 1714054194151,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240425-error.log",
+      "hash": "528317ba8b3a9df73e5140ac4eb84eb2"
+    },
+    {
+      "date": 1714054194153,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240425-access.log",
+      "hash": "0465d5227f0852c97ba224934e258610"
+    },
+    {
+      "date": 1714141936583,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240426-error.log",
+      "hash": "0bf6791897ec92f4e22625f11d507b30"
+    },
+    {
+      "date": 1714141936584,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240426-access.log",
+      "hash": "357248674dd97268ecd14b4a54ccd2f7"
+    },
+    {
+      "date": 1714147263890,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240427-access.log",
+      "hash": "fcd7be78c927fd11b6e4cc00476e65ad"
+    },
+    {
+      "date": 1713276002516,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240416-access.log",
+      "hash": "5474460a99ad1b2c9bfd627f41ef8db7"
+    },
+    {
+      "date": 1713319816829,
+      "name": "E:\\wrokspace\\menu_server\\run_log\\20240417-error.log",
+      "hash": "8cab24b1105cb89aa3813f21e78a448b"
+    },
+    {
+      "date": 1713319816832,
+      "name": "E:\\wrokspace\\menu_server\\run_log\\20240417-access.log",
+      "hash": "3b1f86d8198e34c431d0b634f68e8520"
+    }, {
+      "date": 1714147264095,
+      "name": "D:\\workspace\\menu_server\\run_log\\20240427-error.log",
+      "hash": "b3922b8acd39b72448fcae0217051fc4"
+    }
+  ]
 }
