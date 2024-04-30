@@ -2,9 +2,12 @@ const app = require('express')
 
 const router = app.Router()
 
-const { orderConfirmHandler } = require('../../api_handler/order/index')
+const { orderConfirmHandler, getClassicOrderHandler } = require('../../api_handler/order/index')
 
-// 获取首页菜单
+// 订单生成
 router.post('/orderConfirm', orderConfirmHandler)
+
+// 获取饭店订单
+router.post('/getClassicOrder', getClassicOrderHandler)
 
 module.exports = router
