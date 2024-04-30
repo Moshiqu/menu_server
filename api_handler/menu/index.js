@@ -307,7 +307,6 @@ exports.addCategoryHandler = (req, res) => {
             sort_index = result[result.length - 1].sort_index + 1
         }
         // 插入新的分类
-        // category_name,user_id,sort_index)
         db.query(`INSERT INTO category SET ?`, { category_name, user_id, sort_index }, (err, result) => {
             if (err) return res.output(500, err.code)
             res.output(200, '添加成功')
