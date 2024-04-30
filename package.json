@@ -15,7 +15,8 @@
     "file-stream-rotator": "^1.0.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
-    "mysql2": "^3.9.4"
+    "mysql2": "^3.9.4",
+    "node-uuid": "^1.4.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

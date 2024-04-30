@@ -2,9 +2,14 @@ const app = require('express')
 
 const router = app.Router()
 
-const getMenu = require('./menu/index')
+const menuApi = require('./menu/index')
 
-// 菜单页面
-router.use('/menu', getMenu)
+const orderApi = require('./order/index')
+
+// 菜单相关
+router.use('/menu', menuApi)
+
+// 订单相关
+router.use('/order', orderApi)
 
 module.exports = router
