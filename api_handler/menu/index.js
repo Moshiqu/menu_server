@@ -1,8 +1,10 @@
 const db = require('../../sql/db')
 
 exports.getMenuHandler = (req, res) => {
+    const { userId } = req.auth.user
+    
     // 获取所有分类
-    db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 ORDER BY sort_index ASC', (err, categories) => {
+    db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 AND owner_id = ? ORDER BY sort_index ASC', userId, (err, categories) => {
         if (err) return res.output(500, err.code)
         // 获取分类下的产品
         let category_id = categories.map(item => item.id)
@@ -295,11 +297,11 @@ exports.getMaterialStepHandler = (req, res) => {
 }
 
 exports.addCategoryHandler = (req, res) => {
-    const { cateName: category_name, userId: user_id } = req.body
-    if (!category_name || !user_id) return res.output(400, '缺少必要参数')
+    const { cateName: category_name, userId: owner_id } = req.body
+    if (!category_name || !owner_id) return res.output(400, '缺少必要参数')
 
     // 查找当前用户最大的sort_index
-    db.query(`SELECT MAX(sort_index) sort_index FROM category WHERE user_id = ?`, [user_id], (err, result) => {
+    db.query(`SELECT MAX(sort_index) sort_index FROM category WHERE owner_id = ?`, [owner_id], (err, result) => {
         if (err) return res.output(500, err.code)
 
         let sort_index = 1
@@ -307,7 +309,7 @@ exports.addCategoryHandler = (req, res) => {
             sort_index = result[result.length - 1].sort_index + 1
         }
         // 插入新的分类
-        db.query(`INSERT INTO category SET ?`, { category_name, user_id, sort_index }, (err, result) => {
+        db.query(`INSERT INTO category SET ?`, { category_name, owner_id, sort_index }, (err, result) => {
             if (err) return res.output(500, err.code)
             res.output(200, '添加成功')
         })
@@ -315,12 +317,12 @@ exports.addCategoryHandler = (req, res) => {
 }
 
 exports.getCategoryHandler = (req, res) => {
-    const { userId: user_id } = req.query
-    if (!user_id) return res.output(400, '缺少必要参数')
+    const { userId: owner_id } = req.query
+    if (!owner_id) return res.output(400, '缺少必要参数')
 
     db.query(
-        `SELECT category_name, id, sort_index FROM category WHERE is_active = 1 AND user_id = ? ORDER BY sort_index ASC`,
-        [user_id],
+        `SELECT category_name, id, sort_index FROM category WHERE is_active = 1 AND owner_id = ? ORDER BY sort_index ASC`,
+        [owner_id],
         (err, result) => {
             if (err) return res.output(500, err.code)
             res.output(200, '获取成功', result)

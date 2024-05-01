@@ -2,9 +2,14 @@ const app = require('express')
 
 const router = app.Router()
 
+const uerApi = require('./user/index')
+
 const menuApi = require('./menu/index')
 
 const orderApi = require('./order/index')
+
+// 用户相关
+router.use('/user',uerApi)
 
 // 菜单相关
 router.use('/menu', menuApi)

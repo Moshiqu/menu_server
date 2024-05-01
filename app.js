@@ -20,6 +20,18 @@ app.use(express.json())
 // 解析请求体 content-type: application/x-www-form-urlencoded 赋值给 req.body
 app.use(express.urlencoded({ extended: true }))
 
+// 导入校验token的模块, 解析JWT字符串, 还原成 JSON 对象 的模块
+const expressJwt = require('express-jwt')
+const { SECRET_KEY, NO_AUTHORIZATION_API } = require('./utils/setting')
+
+// 使用中间件解析token
+app.use(
+    expressJwt.expressjwt({
+        secret: SECRET_KEY,
+        algorithms: ['HS256'], // 使用何种加密算法解析
+    }).unless({ path: NO_AUTHORIZATION_API }) // .unless 排除无需校验的路由(比如: 登录)
+)
+
 // 路由
 app.use('/api', require('./routes/index'))
 
@@ -28,10 +40,14 @@ app.all('*', (req, res) => res.output(500, '未匹配到路由'))
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
-  res.output(500, err)
-  next()
+    if (err.name === 'UnauthorizedError') {
+        res.output(500, '登录已过期, 请重新登录')
+    } else {
+        res.output(500, err)
+    }
+    next()
 })
 
 app.listen(port, () => {
-  console.log(`Server running at http://${hostname}:${port}/`)
+    console.log(`Server running at http://${hostname}:${port}/`)
 })
