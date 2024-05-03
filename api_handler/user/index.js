@@ -5,7 +5,7 @@ const axios = require('axios')
 
 exports.getOpenIdHandler = (req, res) => {
     const { code } = req.query
-    if (!code) return res.out(400, '缺少用户code')
+    if (!code) return res.output(400, '缺少用户code')
 
     const instance = axios.create({
         baseURL: 'https://api.weixin.qq.com',
@@ -56,23 +56,47 @@ exports.getOpenIdHandler = (req, res) => {
 
 exports.checkHandler = (req, res) => {
     const { openid } = req.query
-    if (!openid) return res.out(400, '缺少必要参数')
+    if (!openid) return res.output(400, '缺少必要参数')
 
-    // 没有token
     db.query('SELECT id from user WHERE openid = ?', openid, (err, userInfo) => {
         if (err) return res.output(500, err)
 
-        if (userInfo.length !== 1) return res.output(500, '用户不唯一')
+        switch (userInfo.length) {
+            case 0:
+                return res.output(200, '创建新用户')
 
-        const token = jwt.sign(
-            { user: { userId: userInfo[0].id } },
-            SECRET_KEY,
-            { expiresIn: '3d' }
-        )
+            case 1:
+                const token = jwt.sign(
+                    { user: { userId: userInfo[0].id } },
+                    SECRET_KEY,
+                    { expiresIn: '3d' }
+                )
 
-        res.output(200, '成功', { token })
+                return res.output(200, '成功', { token })
+
+            default:
+                return res.output(500, '用户不唯一')
+        }
     })
+}
 
-    // 有token
+exports.getUserHandler = (req, res) => {
+    const { value } = req.query
+    if (!value) return res.output(400, '缺少必要参数')
 
-} 
+    db.query(`SELECT id FROM user WHERE is_active = 1 AND nick_name LIKE ?`, `%${value}%`, (err, usersResult) => {
+        if (err) return res.output(500, err)
+
+        if(!usersResult.length) return res.output(200,'请求成功',[])
+
+        const valueId = usersResult.map(item => item.id)
+
+        const placeholders = Array(usersResult.length).fill('?').join(','); // 生成占位符字符串，例如 '?,?,?,?,?' 
+
+        db.query(`SELECT * FROM view_user_products_num WHERE id IN (${placeholders})`, valueId, (err, result) => {
+            if (err) return res.output(500, err)
+
+            res.output(200, '请求成功', result)
+        })
+    })
+}

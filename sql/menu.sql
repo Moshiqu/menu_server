@@ -11,7 +11,7 @@
  Target Server Version : 80033
  File Encoding         : 65001
 
- Date: 01/05/2024 21:12:16
+ Date: 03/05/2024 18:10:20
 */
 
 SET NAMES utf8mb4;
@@ -48,6 +48,8 @@ INSERT INTO `category` VALUES (30, 1, '护肤品', '2024-04-23 22:41:09', '2024-
 INSERT INTO `category` VALUES (31, 1, '手机', '2024-04-23 23:02:57', '2024-04-30 22:14:04', 10086, 13);
 INSERT INTO `category` VALUES (32, 1, '电脑硬件', '2024-04-26 23:17:29', '2024-04-30 22:14:08', 10086, 7);
 INSERT INTO `category` VALUES (33, 1, '方便面', '2024-04-30 22:14:02', '2024-04-30 22:14:10', 10086, 2);
+INSERT INTO `category` VALUES (34, 1, '蔬菜', '2024-05-03 16:35:27', '2024-05-03 16:35:27', 10011, 1);
+INSERT INTO `category` VALUES (35, 1, '肉', '2024-05-03 16:35:48', '2024-05-03 16:35:48', 10011, 1);
 
 -- ----------------------------
 -- Table structure for material
@@ -151,7 +153,7 @@ INSERT INTO `production` VALUES (3, 1, '羊肉', '以收', NULL, '2024-04-08 18:
 INSERT INTO `production` VALUES (81, 1, '牛肉面', NULL, NULL, '2024-04-23 22:41:36', '2024-04-23 23:04:27', 24, NULL, 1, NULL, 0, 0);
 INSERT INTO `production` VALUES (82, 1, '豌杂面', NULL, NULL, '2024-04-23 22:41:54', '2024-04-23 23:04:27', 24, NULL, 2, NULL, 0, 0);
 INSERT INTO `production` VALUES (83, 1, '香蕉', NULL, NULL, '2024-04-23 22:42:48', '2024-04-23 22:42:48', 23, NULL, 1, NULL, 0, 0);
-INSERT INTO `production` VALUES (84, 1, '小米儿', '这个是小米儿', NULL, '2024-04-23 23:03:22', '2024-04-23 23:03:22', 31, NULL, 1, 1.00, 0, 0);
+INSERT INTO `production` VALUES (84, 1, '小米儿', '这个是小米儿', NULL, '2024-04-23 23:03:22', '2024-05-03 16:43:13', 31, NULL, 1, 1.00, 99, 0);
 INSERT INTO `production` VALUES (85, 1, '苹果', NULL, NULL, '2024-04-26 22:48:37', '2024-04-26 22:48:37', 23, NULL, 2, NULL, 0, 0);
 INSERT INTO `production` VALUES (86, 1, '馄饨', NULL, NULL, '2024-04-26 22:48:50', '2024-04-26 22:48:50', 26, NULL, 1, NULL, 0, 0);
 INSERT INTO `production` VALUES (87, 1, '印度飞饼', NULL, NULL, '2024-04-26 22:49:02', '2024-04-26 22:49:02', 25, NULL, 1, NULL, 0, 0);
@@ -162,6 +164,9 @@ INSERT INTO `production` VALUES (91, 1, '3070显卡', NULL, NULL, '2024-04-27 13
 INSERT INTO `production` VALUES (92, 0, '统一老坛酸菜牛肉面', '这个是酸菜方便面', NULL, '2024-04-30 22:14:43', '2024-04-30 22:18:01', 33, NULL, 1, NULL, 0, 0);
 INSERT INTO `production` VALUES (93, 0, '康师傅红烧牛肉面', '这个是红烧牛肉面', NULL, '2024-04-30 22:15:10', '2024-04-30 22:18:03', 33, NULL, 2, 11.00, 0, 0);
 INSERT INTO `production` VALUES (94, 1, '龙肉', NULL, NULL, '2024-05-01 21:06:54', '2024-05-01 21:06:54', 2, NULL, 6, NULL, 0, 0);
+INSERT INTO `production` VALUES (95, 1, '番茄', NULL, NULL, '2024-05-03 16:36:31', '2024-05-03 16:36:31', 34, NULL, 1, NULL, 0, 0);
+INSERT INTO `production` VALUES (96, 1, '生菜', NULL, NULL, '2024-05-03 16:36:48', '2024-05-03 16:36:48', 34, NULL, 1, NULL, 0, 0);
+INSERT INTO `production` VALUES (97, 1, '老鼠肉', NULL, NULL, '2024-05-03 16:37:01', '2024-05-03 16:42:56', 35, NULL, 1, NULL, 1, 0);
 
 -- ----------------------------
 -- Table structure for step
@@ -202,14 +207,23 @@ CREATE TABLE `user`  (
   `created_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `nick_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户昵称',
+  `description` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '介绍',
   `openid` char(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '微信的openid',
+  `wx_avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '微信头像',
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '商店logo',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 10088 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (10011, 1, '2024-04-30 11:50:57', '2024-05-01 21:07:13', '大青蛙', '11111');
-INSERT INTO `user` VALUES (10086, 1, '2024-04-30 11:50:40', '2024-05-01 19:47:31', '小松鼠', 'oUp2a5GWu3O-kD4KCxuCb1RKLzdo');
+INSERT INTO `user` VALUES (10011, 1, '2024-04-30 11:50:57', '2024-05-03 16:04:57', '大青蛙(小)', NULL, '11111', NULL, NULL);
+INSERT INTO `user` VALUES (10086, 1, '2024-04-30 11:50:40', '2024-05-03 17:22:27', '小松鼠', '这个是测试用的商户名字呀', 'oUp2a5GWu3O-kD4KCxuCb1RKLzdo', NULL, NULL);
+
+-- ----------------------------
+-- View structure for view_user_products_num
+-- ----------------------------
+DROP VIEW IF EXISTS `view_user_products_num`;
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `view_user_products_num` AS select count(`production`.`id`) AS `total_product_num`,`user`.`nick_name` AS `nick_name`,`user`.`id` AS `id`,`user`.`avatar` AS `avatar`,sum(`production`.`like_num`) AS `total_like_num`,`user`.`description` AS `description` from ((`user` join `category` on((`user`.`id` = `category`.`owner_id`))) join `production` on((`category`.`id` = `production`.`category_id`))) where ((`user`.`is_active` = 1) and (`category`.`is_active` = 1) and (`production`.`is_active` = 1)) group by `user`.`id`;
 
 SET FOREIGN_KEY_CHECKS = 1;
