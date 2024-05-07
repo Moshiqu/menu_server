@@ -72,7 +72,7 @@ exports.checkHandler = (req, res) => {
                     { expiresIn: '3d' }
                 )
 
-                return res.output(200, '成功', { token })
+                return res.output(200, '成功', { token, id: userInfo[0].id })
 
             default:
                 return res.output(500, '用户不唯一')
@@ -87,7 +87,7 @@ exports.getUserHandler = (req, res) => {
     db.query(`SELECT id FROM user WHERE is_active = 1 AND nick_name LIKE ?`, `%${value}%`, (err, usersResult) => {
         if (err) return res.output(500, err)
 
-        if(!usersResult.length) return res.output(200,'请求成功',[])
+        if (!usersResult.length) return res.output(200, '请求成功', [])
 
         const valueId = usersResult.map(item => item.id)
 

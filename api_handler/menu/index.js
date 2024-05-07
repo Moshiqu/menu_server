@@ -2,9 +2,13 @@ const db = require('../../sql/db')
 
 exports.getMenuHandler = (req, res) => {
     const { userId } = req.auth.user
-    
+
+    const { viewUserId } = req.query
+
+    let owner_id = viewUserId || userId
+
     // 获取所有分类
-    db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 AND owner_id = ? ORDER BY sort_index ASC', userId, (err, categories) => {
+    db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 AND owner_id = ? ORDER BY sort_index ASC', owner_id, (err, categories) => {
         if (err) return res.output(500, err.code)
         // 获取分类下的产品
         let category_id = categories.map(item => item.id)
