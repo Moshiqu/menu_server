@@ -3,9 +3,8 @@ const db = require('../../sql/db')
 exports.getMenuHandler = (req, res) => {
     const { userId } = req.auth.user
 
-    const { viewUserId } = req.query
-
-    let owner_id = viewUserId || userId
+    const { storeId } = req.query
+    const owner_id = Number(storeId) || userId
 
     // 获取所有分类
     db.query('SELECT category_name, id, sort_index FROM category WHERE is_active = 1 AND owner_id = ? ORDER BY sort_index ASC', owner_id, (err, categories) => {
@@ -301,8 +300,12 @@ exports.getMaterialStepHandler = (req, res) => {
 }
 
 exports.addCategoryHandler = (req, res) => {
-    const { cateName: category_name, userId: owner_id } = req.body
-    if (!category_name || !owner_id) return res.output(400, '缺少必要参数')
+    const { cateName: category_name } = req.body
+
+    const { user } = req.auth
+    const owner_id = user.userId
+    
+    if (!category_name || !Number(owner_id)) return res.output(400, '缺少必要参数')
 
     // 查找当前用户最大的sort_index
     db.query(`SELECT MAX(sort_index) sort_index FROM category WHERE owner_id = ?`, [owner_id], (err, result) => {

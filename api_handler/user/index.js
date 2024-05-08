@@ -80,7 +80,7 @@ exports.checkHandler = (req, res) => {
     })
 }
 
-exports.getUserHandler = (req, res) => {
+exports.searchStoreHandler = (req, res) => {
     const { value } = req.query
     if (!value) return res.output(400, '缺少必要参数')
 
@@ -99,4 +99,14 @@ exports.getUserHandler = (req, res) => {
             res.output(200, '请求成功', result)
         })
     })
+}
+
+exports.getUserInfoHandler = (req, res) => {
+    const { user: { userId } } = req.auth;
+
+    db.query(`SELECT id, nick_name, description, wx_avatar, avatar FROM user WHERE is_active = 1 AND id = ?`, userId, (err, result) => {
+        if (err) return res.output(500, err.code)
+        res.output(200, '请求成功', result[0] || [])
+    })
+
 }

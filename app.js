@@ -40,7 +40,9 @@ app.all('*', (req, res) => res.output(500, '未匹配到路由'))
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
-    if (err.name === 'UnauthorizedError') {
+    if (err.name === 'UnauthorizedError' && !req.auth) {
+        res.output(500, '未登录')
+    } else if (err.name === 'UnauthorizedError') {
         res.output(500, '登录已过期, 请重新登录')
     } else {
         res.output(500, err)
