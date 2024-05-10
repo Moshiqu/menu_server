@@ -2,7 +2,7 @@ const app = require('express')
 
 const router = app.Router()
 
-const { getOpenIdHandler, checkHandler, searchStoreHandler, getUserInfoHandler } = require('../../api_handler/user/index')
+const { getOpenIdHandler, checkHandler, searchStoreHandler, getUserInfoHandler, getStoreUserInfoHandler } = require('../../api_handler/user/index')
 
 // 获取openid
 router.get('/getOpenId', getOpenIdHandler)
@@ -15,5 +15,8 @@ router.get('/searchStore', searchStoreHandler)
 
 // 获取用户信息
 router.get('/getUserInfo', getUserInfoHandler)
+
+// 获取其他用户信息
+router.get('/getStoreUserInfo', getStoreUserInfoHandler)
 
 module.exports = router
