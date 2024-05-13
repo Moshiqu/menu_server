@@ -110,3 +110,17 @@ exports.getUserInfoHandler = (req, res) => {
     })
 
 }
+
+exports.getStoreUserInfoHandler = (req, res) => {
+    const { storeId: userId } = req.query;
+    const { user: { userId: userId2 } } = req.auth;
+
+    if (!userId && !userId2) return res.output(400, '缺少必要参数')
+
+
+    db.query(`SELECT id, nick_name, description, wx_avatar, avatar FROM user WHERE is_active = 1 AND id = ?`, userId || userId2, (err, result) => {
+        if (err) return res.output(500, err.code)
+        res.output(200, '请求成功', result[0] || [])
+    })
+
+}
