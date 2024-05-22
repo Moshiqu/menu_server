@@ -1,32 +1,53 @@
 const db = require('../../sql/db')
 const uuid = require('node-uuid')
+const moment = require('moment')
 
 exports.orderConfirmHandler = (req, res) => {
-    const { ownerId, consumerId, orderPrice } = req.body
-    let orderList = req.body.orderList
+    // TODO 改造订单生成接口
+    const { ownerId, orderPrice, makeTime, orderMakeTime, remark } = req.body
+    const { userId: consumerId } = req.auth.user
+
+    let products = req.body.products
 
     if (!ownerId) return res.output(400, '商家id不能为空')
 
     if (!consumerId) return res.output(400, '消费者id不能为空')
 
-    if (ownerId === consumerId) return res.output(400, '商家和消费者不能为同一人')
+    if (ownerId === consumerId) return res.output(400, '不能给自己下单哦~')
 
-    orderList = JSON.parse(orderList)
 
-    if (!orderList || !Array.isArray(orderList) || !orderList.length) return res.output(400, '订单格式不正确')
+    if (!orderMakeTime) return res.output(400, '请选择制作时间')
+
+    if (orderMakeTime === 'time' && !makeTime) return res.output(400, '请选择预约时间')
+
+    let makeTime_formatted = 0
+    try {
+        if (orderMakeTime === 'time' && makeTime) {
+            const [hour, minutes] = makeTime.split(":")
+            const momentObj = moment().set('hour', hour).set('minutes', minutes)
+            makeTime_formatted = momentObj.format('YYYY-MM-DD HH:mm:00')
+        }
+    } catch (error) {
+        return res.output(400, '预约时间格式错误')
+    }
+
+    if (!products || !Array.isArray(products) || !products.length) return res.output(400, '订单格式不正确')
+
+    if (remark && remark.length > 50) return res.output(400, '备注不能超过50个字')
 
     // 创建uuid
     const order_id = uuid.v4().replace(/-/g, '')
 
     // 新建订单
-    const ordersSql = `INSERT INTO orders (id, owner_id, consumer_id, order_price) VALUES ('${order_id}', ${ownerId}, ${consumerId}, ${orderPrice || 0
-        })`
+    const ordersSql = `INSERT INTO orders (id, owner_id, consumer_id, order_price, make_type, make_time, remark) VALUES (?, ?, ?, ?, ?, ?, ?)`
+
+    const orderValue = [order_id, ownerId, consumerId, orderPrice || 0, orderMakeTime, makeTime_formatted || moment().format('YYYY-MM-DD HH:mm:ss'), remark || null]
 
     // 新建订单商品
     const orderProductSql = `INSERT INTO order_products (product_id, product_num, product_price, order_id) VALUES (?,?,?,?)`
 
-    const orderProductValues = orderList.map(item => {
-        const { productId: product_id, productNum: product_num, productPrice: product_price } = item
+    const orderProductValues = products.map(item => {
+        const [product_id, product_num, product_price] = item
         return [product_id, product_num, product_price, order_id]
     })
 
@@ -38,12 +59,13 @@ exports.orderConfirmHandler = (req, res) => {
     })
 
     batchQueryObj.push({
-        sql: ordersSql
+        sql: ordersSql,
+        params: orderValue
     })
 
     db.transaction(batchQueryObj)
         .then(results => {
-            res.output(200, '添加成功')
+            res.output(200, '下单成功')
         })
         .catch(err => {
             res.output(500, err)
