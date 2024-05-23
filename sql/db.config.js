@@ -5,4 +5,6 @@ module.exports = {
     password: 'admin',
     database: 'menu',
     connectionLimit: 10, // 连接池最大连接数
+    waitForConnections: true,  
+    queueLimit: 0  
 }
