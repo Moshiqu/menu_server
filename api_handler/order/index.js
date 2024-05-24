@@ -80,7 +80,7 @@ exports.getProcessingOrderHandler = (req, res) => {
 
     // classic为1, userId则是owner_id; classic为2, 则是consumer_id
     db.query(
-        `SELECT order_status, order_price, created_time, id, remark, make_time, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND order_status IN (1,2,3) AND is_active = 1 AND order_status in (1,2,3,4)ORDER BY created_time DESC`,
+        `SELECT order_status, order_price, created_time, id, remark, make_time, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND is_active = 1 AND order_status in ${classic == 1 ? '(1, 2)' : '(1, 2, 3)'} ORDER BY created_time DESC`,
         [userId],
         (err, orders) => {
 
@@ -296,4 +296,100 @@ exports.getOrderDateHandler = (req, res) => {
         return res.output(200, '获取成功', orderListFormatted)
     })
 
+}
+
+exports.deleteOrderHandler = (req, res) => {
+    const { orderId } = req.body
+
+    const { userId } = req.auth.user
+
+    if (!orderId) return res.output(400, '订单id不能为空')
+
+    db.query("SELECT order_status FROM orders WHERE is_active = 1 AND owner_id = ? AND id = ?", [userId, orderId], (err, orderList) => {
+        if (err) return res.output(500, err.code)
+
+        if (orderList.length != 1) return res.output(500, '订单异常')
+
+        if (![1, 2].includes(orderList[0].order_status)) return res.output(500, '仅可取消待制作和制作中的订单')
+
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 4 }, orderId], (err, result) => {
+            if (err) return res.output(500, err.code)
+
+            if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
+
+            return res.output(200, '取消订单成功')
+        })
+    })
+}
+
+exports.startMakeHandler = (req, res) => {
+    const { orderId } = req.body
+
+    const { userId } = req.auth.user
+
+    if (!orderId) return res.output(400, '订单id不能为空')
+
+    db.query("SELECT order_status FROM orders WHERE is_active = 1 AND owner_id = ? AND id = ?", [userId, orderId], (err, orderList) => {
+        if (err) return res.output(500, err.code)
+
+        if (orderList.length != 1) return res.output(500, '订单异常')
+
+        if (orderList[0].order_status != 1) return res.output(500, '仅可开始待制作的订单')
+
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 2 }, orderId], (err, result) => {
+            if (err) return res.output(500, err.code)
+
+            if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
+
+            return res.output(200, '状态修改成功')
+        })
+    })
+}
+
+exports.finishMakeHandler = (req, res) => {
+    const { orderId } = req.body
+
+    const { userId } = req.auth.user
+
+    if (!orderId) return res.output(400, '订单id不能为空')
+
+    db.query("SELECT order_status FROM orders WHERE is_active = 1 AND owner_id = ? AND id = ?", [userId, orderId], (err, orderList) => {
+        if (err) return res.output(500, err.code)
+
+        if (orderList.length != 1) return res.output(500, '订单异常')
+
+        if (orderList[0].order_status != 2) return res.output(500, '仅可完成制作中的订单')
+
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 3 }, orderId], (err, result) => {
+            if (err) return res.output(500, err.code)
+
+            if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
+
+            return res.output(200, '状态修改成功')
+        })
+    })
+}
+
+exports.finishOrderHandler = (req, res) => {
+    const { orderId } = req.body
+
+    const { userId } = req.auth.user
+
+    if (!orderId) return res.output(400, '订单id不能为空')
+
+    db.query("SELECT order_status FROM orders WHERE is_active = 1 AND consumer_id = ? AND id = ?", [userId, orderId], (err, orderList) => {
+        if (err) return res.output(500, err.code)
+
+        if (orderList.length != 1) return res.output(500, '订单异常')
+
+        if (orderList[0].order_status != 3) return res.output(500, '仅可结束制作完成的订单')
+
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 5 }, orderId], (err, result) => {
+            if (err) return res.output(500, err.code)
+
+            if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
+
+            return res.output(200, '状态修改成功')
+        })
+    })
 }
