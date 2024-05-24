@@ -154,7 +154,7 @@ exports.getOrderByDateHandler = (req, res) => {
 
     // classic为1, userId则是owner_id; classic为2, 则是consumer_id
     db.query(
-        `SELECT order_status, order_price, created_time, id, remark, make_time FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND order_status IN (1,2,3,4) AND is_active = 1 AND (created_time BETWEEN ? AND ?)ORDER BY created_time DESC`,
+        `SELECT order_status, order_price, created_time, id, remark, make_time FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND order_status IN (1,2,3,4) AND is_active = 1 AND (created_time BETWEEN ? AND ?) ORDER BY created_time DESC`,
         [userId, dateStart, dateEnd],
         (err, orders) => {
 
@@ -192,4 +192,23 @@ exports.getOrderByDateHandler = (req, res) => {
             )
         }
     )
+}
+
+exports.getOrderDateHandler = (req, res) => {
+    const { userId } = req.auth.user
+
+    db.query(`SELECT DATE(CONVERT_TZ(created_time, '+00:00', '+08:00')) AS formattedDate FROM orders WHERE is_active = 1 AND ( owner_id = ? or consumer_id = ? )GROUP BY formattedDate`, [userId, userId], (err, orderList) => {
+        if (err) return res.output(500, err.code)
+
+        if (!orderList.length) return res.output(200, '获取成功', [])
+
+        const orderListFormatted = orderList.map(item => {
+            return {
+                date: moment.utc(item.formattedDate).format('YYYY-MM-DD')
+            }
+        })
+
+        return res.output(200, '获取成功', orderListFormatted)
+    })
+
 }
