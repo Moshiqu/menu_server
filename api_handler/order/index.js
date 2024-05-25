@@ -312,7 +312,7 @@ exports.deleteOrderHandler = (req, res) => {
 
         if (![1, 2].includes(orderList[0].order_status)) return res.output(500, '仅可取消待制作和制作中的订单')
 
-        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 4 }, orderId], (err, result) => {
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 4, cancel_time: moment().format('YYYY-MM-DD HH:mm:ss') }, orderId], (err, result) => {
             if (err) return res.output(500, err.code)
 
             if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
@@ -336,7 +336,7 @@ exports.startMakeHandler = (req, res) => {
 
         if (orderList[0].order_status != 1) return res.output(500, '仅可开始待制作的订单')
 
-        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 2 }, orderId], (err, result) => {
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 2, start_make_time: moment().format("YYYY-MM-DD HH:mm:ss") }, orderId], (err, result) => {
             if (err) return res.output(500, err.code)
 
             if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
@@ -360,7 +360,7 @@ exports.finishMakeHandler = (req, res) => {
 
         if (orderList[0].order_status != 2) return res.output(500, '仅可完成制作中的订单')
 
-        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 3 }, orderId], (err, result) => {
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 3, done_make_time: moment().format("YYYY-MM-DD HH:mm:ss") }, orderId], (err, result) => {
             if (err) return res.output(500, err.code)
 
             if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
@@ -384,7 +384,7 @@ exports.finishOrderHandler = (req, res) => {
 
         if (orderList[0].order_status != 3) return res.output(500, '仅可结束制作完成的订单')
 
-        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 5 }, orderId], (err, result) => {
+        db.query("UPDATE orders SET ? WHERE id = ?", [{ order_status: 5, finish_time: moment().format("YYYY-MM-DD HH:mm:ss") }, orderId], (err, result) => {
             if (err) return res.output(500, err.code)
 
             if (result.affectedRows != 1) return res.output(500, '该订单状态异常')
