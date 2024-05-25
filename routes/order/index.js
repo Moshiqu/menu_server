@@ -2,7 +2,7 @@ const app = require('express')
 
 const router = app.Router()
 
-const { orderConfirmHandler, getProcessingOrderHandler, getOrderByDateHandler, getOrderDateHandler, deleteOrderHandler, startMakeHandler, finishMakeHandler, finishOrderHandler } = require('../../api_handler/order/index')
+const { orderConfirmHandler, getProcessingOrderHandler, getOrderByDateHandler, getOrderDateHandler, deleteOrderHandler, startMakeHandler, finishMakeHandler, finishOrderHandler, getHistoryOrderHandler } = require('../../api_handler/order/index')
 
 // 订单生成
 router.post('/orderConfirm', orderConfirmHandler)
@@ -27,5 +27,8 @@ router.post("/finishMake", finishMakeHandler)
 
 // 修改订单状态 制作完成->订单完成
 router.post("/finishOrder", finishOrderHandler)
+
+// 获取历史订单
+router.post("/getHistoryOrder", getHistoryOrderHandler)
 
 module.exports = router

@@ -80,7 +80,7 @@ exports.getProcessingOrderHandler = (req, res) => {
 
     // classic为1, userId则是owner_id; classic为2, 则是consumer_id
     db.query(
-        `SELECT order_status, order_price, created_time, id, remark, make_time, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND is_active = 1 AND order_status in ${classic == 1 ? '(1, 2)' : '(1, 2, 3)'} ORDER BY created_time DESC`,
+        `SELECT order_status, order_price, created_time, id, remark, make_time, make_type, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND is_active = 1 AND order_status in ${classic == 1 ? '(1, 2)' : '(1, 2, 3)'} ORDER BY created_time DESC`,
         [userId],
         (err, orders) => {
 
@@ -199,7 +199,7 @@ exports.getOrderByDateHandler = (req, res) => {
 
     // classic为1, userId则是owner_id; classic为2, 则是consumer_id
     db.query(
-        `SELECT order_status, order_price, created_time, id, remark, make_time, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND is_active = 1 AND (created_time BETWEEN ? AND ?) ORDER BY created_time DESC`,
+        `SELECT order_status, order_price, created_time, id, remark, make_time, make_type, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND is_active = 1 AND (created_time BETWEEN ? AND ?) ORDER BY created_time DESC`,
         [userId, dateStart, dateEnd],
         (err, orders) => {
             if (err) return res.output(500, err.code)
@@ -392,4 +392,98 @@ exports.finishOrderHandler = (req, res) => {
             return res.output(200, '状态修改成功')
         })
     })
+}
+
+exports.getHistoryOrderHandler = (req, res) => {
+    const { classic } = req.body
+    const { userId } = req.auth.user
+
+    // classic 1 饭店订单; 2 个人订单;
+    if (!classic) return res.output(400, '缺少订单类型参数')
+
+    // classic为1, userId则是owner_id; classic为2, 则是consumer_id
+    db.query(
+        `SELECT order_status, order_price, created_time, id, remark, make_time, make_type, owner_id, consumer_id FROM orders WHERE ${classic == 1 ? 'owner_id' : 'consumer_id'} = ? AND is_active = 1 AND order_status in ${classic == 1 ? '(3, 4, 5)' : '(4, 5)'} AND created_time BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW() ORDER BY created_time DESC`,
+        [userId],
+        (err, orders) => {
+            if (err) return res.output(500, err.code)
+
+            if (!orders.length) return res.output(200, '暂无订单', [])
+
+
+            // 获取涉及到的用户列表
+            const userInfoPromise = () => {
+                return new Promise((resolve, reject) => {
+                    // 所有用户的id集合
+                    const usersIdsSet = new Set()
+
+                    orders.forEach(item => {
+                        usersIdsSet.add(item.owner_id)
+                        usersIdsSet.add(item.consumer_id)
+                    })
+
+                    const usersIdsList = Array.from(usersIdsSet)
+
+                    const usersIdsStr = new Array(usersIdsList.length).fill('?').join(',')
+
+                    db.query(`SELECT id, nick_name, wx_avatar FROM user WHERE is_active = 1 AND id in (${usersIdsStr})`, usersIdsList, (err, userList) => {
+                        if (err) reject(err)
+
+                        if (!userList.length) resolve([])
+
+                        resolve(userList)
+                    })
+                })
+            }
+
+            // 获取涉及到的订单商品
+            const productListPromise = () => {
+                const orderIds = orders
+                    .map(item => `${item.id}`)
+                    .reduce((acc, cur, index) => {
+                        if (index) return `${acc}, "${cur}"`
+                        return `"${cur}"`
+                    }, '')
+
+                return new Promise((resolve, reject) => {
+                    db.query(
+                        `SELECT product_id, product_name, product_num, product_price, order_id FROM order_products WHERE is_active = 1 AND order_id IN (${orderIds})`,
+                        (err, orderProductsList) => {
+                            if (err) reject(err)
+
+                            if (!orderProductsList.length) resolve([])
+
+                            resolve(orderProductsList)
+                        }
+                    )
+                })
+            }
+
+            Promise.all([userInfoPromise(), productListPromise()]).then(results => {
+                const [userList, orderProducts] = results
+                if (!userList.length || !orderProducts.length) return res.output(200, '获取成功', [])
+
+
+                const productIds = orderProducts.map(item => item.product_id)
+
+                db.query(`SELECT * FROM production WHERE is_active = 1 AND id IN (${productIds.join(',')})`, (err, product) => {
+                    if (err) return res.output(500, err.code)
+
+                    orders.forEach(item => {
+                        item.ownerInfo = userList.find(userItem => userItem.id == item.owner_id)
+                        item.consumerInfo = userList.find(userItem => userItem.id == item.consumer_id)
+                        item.orderProducts = orderProducts.filter(orderProductItem => orderProductItem.order_id === item.id)
+                        item.orderProducts.forEach(orderProductItem => {
+                            orderProductItem.detail = product.find(item => item.id === orderProductItem.product_id)
+                        })
+                    })
+
+                    return res.output(200, '获取成功', orders)
+                })
+            }).catch(errs => {
+                return res.output(500, errs.code)
+            })
+        }
+    )
+
 }
