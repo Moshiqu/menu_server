@@ -273,6 +273,8 @@ exports.getOrderByDateHandler = (req, res) => {
 
                     res.output(200, '获取成功', orders)
                 })
+            }).catch(err => {
+                return res.output(500, err.code)
             })
 
         }
@@ -486,4 +488,79 @@ exports.getHistoryOrderHandler = (req, res) => {
         }
     )
 
+}
+
+exports.getOrderDetailHandler = (req, res) => {
+    const { orderId } = req.query
+
+    if (!orderId) return res.output(400, '缺少订单参数')
+
+    db.query('SELECT id, created_time, update_time, order_status, order_price, owner_id, consumer_id, make_time, make_type, remark, start_make_time, done_make_time, cancel_time, finish_time FROM orders WHERE is_active = 1 AND id = ?', [orderId], (err, orderResult) => {
+        if (err) return res.output(500, err.code)
+
+        if (!orderResult.length) {
+            return res.output(500, '订单不存在')
+        } else if (orderResult.length !== 1) {
+            return res.output(500, '订单异常')
+        }
+
+        const order = orderResult[0]
+
+        const { consumer_id, owner_id } = order
+
+        // 查找用户信息
+        const userPromise = () => {
+            const userSql = 'SELECT nick_name, wx_nick_name, avatar, wx_avatar, id FROM user WHERE is_active = 1 AND id in (?,?)'
+            const userValue = [consumer_id, owner_id]
+
+            return new Promise((resolve, reject) => {
+                db.query(userSql, userValue, (err, userResult) => {
+                    if (err) reject(err)
+                    resolve(userResult)
+                })
+            })
+        }
+
+        // 查找订单内的商品信息
+        const productPromise = () => {
+            const productSql = 'SELECT product_id, product_num, product_name, product_price FROM order_products WHERE is_active = 1 AND order_id = ?'
+            const productValue = [orderId]
+
+            return new Promise((resolve, reject) => {
+                db.query(productSql, productValue, (err, productResult) => {
+                    if (err) reject(err)
+                    resolve(productResult)
+                })
+            })
+        }
+
+        Promise.all([userPromise(), productPromise()]).then(results => {
+            const [userResult, productResult] = results
+
+            order.owner_info = userResult.find(item => item.id == order.owner_id)
+            order.consumer_info = userResult.find(item => item.id == order.consumer_id)
+
+            order.productions = productResult
+            const productIdsList = productResult.map(item => item.product_id)
+
+            // 查找订单商品信息(为了获取商品图片)
+            const productionIdsInSql = new Array(productIdsList.length).fill('?')
+
+            const productionSql = `SELECT img_src, id FROM production WHERE is_active = 1 AND id in (${productionIdsInSql})`
+
+            db.query(productionSql, productIdsList, (err, productionList) => {
+                if (err) return res.output(500, err.code)
+
+                productResult.forEach(productionItem => {
+                    productionItem.img_src = productionList.find(item => item.id === productionItem.product_id).img_src || null
+                })
+
+                order.productions = productResult
+
+                return res.output(200, '获取成功', order)
+            })
+        }).catch(err => {
+            return res.output(500, err.code)
+        })
+    })
 }

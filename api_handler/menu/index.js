@@ -173,7 +173,7 @@ exports.addMaterialStepHandler = (req, res) => {
             res.output(200, '添加成功')
         })
         .catch(err => {
-            res.output(500, err)
+            res.output(500, err.code)
         })
 }
 
@@ -295,7 +295,7 @@ exports.getMaterialStepHandler = (req, res) => {
             res.output(200, '获取成功', { material: values[0], step: values[1] })
         })
         .catch(err => {
-            res.output(500, err)
+            res.output(500, err.code)
         })
 }
 
@@ -409,6 +409,6 @@ exports.getProductHandler = (req, res) => {
 
         return res.output(200, '获取商品详情成功', productionResult)
     }).catch(err => {
-        return res.output(500, err)
+        return res.output(500, err.code)
     })
 }
