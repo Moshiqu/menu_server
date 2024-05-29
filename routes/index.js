@@ -1,6 +1,6 @@
-const app = require('express')
+const express = require('express')
 
-const router = app.Router()
+const router = express.Router()
 
 const uerApi = require('./user/index')
 

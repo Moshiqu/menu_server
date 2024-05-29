@@ -3,6 +3,7 @@ const { hostname, port } = require('./utils/host')
 const logger = require('morgan')
 const { loggerName, loggerAccess, loggerError } = require('./utils/middleWare/logger.js')
 const resExtra = require('./utils/middleWare/unifyResFormat')
+const path = require('path')
 
 const app = express()
 
@@ -35,19 +36,22 @@ app.use(
 // 路由
 app.use('/api', require('./routes/index'))
 
+// 获取静态资源(图片)
+app.use('/images',express.static(path.join(__dirname, 'images')))
+
 // 未匹配到路由
-app.all('*', (req, res) => res.output(500, '未匹配到路由'))
+app.all('*', (req, res) => res.output(404, '未匹配到路由'))
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
     if (err.name === 'UnauthorizedError' && !req.auth) {
-        res.output(500, '未登录')
+        res.output(401, '未登录')
     } else if (err.name === 'UnauthorizedError') {
-        res.output(500, '登录已过期, 请重新登录')
+        res.output(401, '登录已过期, 请重新登录')
     } else {
         res.output(500, err)
     }
-    next()
+    // next()
 })
 
 app.listen(port, () => {
