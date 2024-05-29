@@ -27,33 +27,36 @@ const { SECRET_KEY, NO_AUTHORIZATION_API } = require('./utils/setting')
 
 // 使用中间件解析token
 app.use(
-    expressJwt.expressjwt({
-        secret: SECRET_KEY,
-        algorithms: ['HS256'], // 使用何种加密算法解析
-    }).unless({ path: NO_AUTHORIZATION_API }) // .unless 排除无需校验的路由(比如: 登录)
+  expressJwt
+    .expressjwt({
+      secret: SECRET_KEY,
+      algorithms: ['HS256'] // 使用何种加密算法解析
+    })
+    .unless({ path: NO_AUTHORIZATION_API }) // .unless 排除无需校验的路由(比如: 登录)
 )
 
 // 路由
 app.use('/api', require('./routes/index'))
 
-// 获取静态资源(图片)
-app.use('/images',express.static(path.join(__dirname, 'images')))
+// 获取静态资源(图片) static为虚拟静态目录
+app.use('/static', express.static(path.join(__dirname, 'images')))
+app.use('/static', express.static(path.join(__dirname, 'temp')))
 
 // 未匹配到路由
 app.all('*', (req, res) => res.output(404, '未匹配到路由'))
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
-    if (err.name === 'UnauthorizedError' && !req.auth) {
-        res.output(401, '未登录')
-    } else if (err.name === 'UnauthorizedError') {
-        res.output(401, '登录已过期, 请重新登录')
-    } else {
-        res.output(500, err)
-    }
-    // next()
+  if (err.name === 'UnauthorizedError' && !req.auth) {
+    res.output(401, '未登录')
+  } else if (err.name === 'UnauthorizedError') {
+    res.output(401, '登录已过期, 请重新登录')
+  } else {
+    res.output(500, err)
+  }
+  // next()
 })
 
 app.listen(port, () => {
-    console.log(`Server running at http://${hostname}:${port}/`)
+  console.log(`Server running at http://${hostname}:${port}/`)
 })
